@@ -1,0 +1,8 @@
+node_modules
+*.log
+build
+.git
+*.md
+.gitignore
+mysql
+postgresql
