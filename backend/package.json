@@ -6,7 +6,8 @@
     "scripts": {
         "test": "jest",
         "dev": "nodemon index.js",
-        "start": "pm2 start process.yml & tail -f /dev/null"
+        "start": "pm2 start process.yml & tail -f /dev/null",
+        "swagger-autogen": "node ./swagger.js"
     },
     "author": "",
     "license": "ISC",
@@ -19,6 +20,7 @@
         "winston": "^3.10.0"
     },
     "devDependencies": {
-        "nodemon": "^3.0.1"
+        "nodemon": "^3.0.1",
+        "swagger-autogen": "^2.23.7"
     }
 }

@@ -1,50 +1,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -f docker-compose.yaml
-    kompose.version: 1.31.2 (a92241f79)
-  creationTimestamp: null
-  labels:
-    io.kompose.service: database
-  name: database
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      io.kompose.service: database
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      annotations:
+    annotations:
         kompose.cmd: kompose convert -f docker-compose.yaml
         kompose.version: 1.31.2 (a92241f79)
-      creationTimestamp: null
-      labels:
-        io.kompose.network/adminsys2023-intranet: "true"
+    creationTimestamp: null
+    labels:
         io.kompose.service: database
-    spec:
-      containers:
-        - env:
-            - name: POSTGRES_DB
-              value: app_db
-            - name: POSTGRES_PASSWORD
-              value: ultrasecret
-            - name: POSTGRES_USER
-              value: postgres
-          image: postgres:16.0-alpine3.18
-          name: database
-          ports:
-            - containerPort: 5432
-              protocol: TCP
-          resources: {}
-          volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: database-claim0
-      restartPolicy: Always
-      volumes:
-        - name: database-claim0
-          persistentVolumeClaim:
-            claimName: database-claim0
+    name: database
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            io.kompose.service: database
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            annotations:
+                kompose.cmd: kompose convert -f docker-compose.yaml
+                kompose.version: 1.31.2 (a92241f79)
+            creationTimestamp: null
+            labels:
+                io.kompose.network/adminsys2023-intranet: 'true'
+                io.kompose.service: database
+        spec:
+            containers:
+                - env:
+                      - name: POSTGRES_DB
+                        value: app_db
+                      - name: POSTGRES_PASSWORD
+                        value: ultrasecret
+                      - name: POSTGRES_USER
+                        value: postgres
+                  image: postgres:16.0-alpine3.18
+                  name: database
+                  ports:
+                      - containerPort: 5432
+                        protocol: TCP
+                  resources: {}
+                  volumeMounts:
+                      - mountPath: /var/lib/postgresql/data
+                        name: database-claim0
+            restartPolicy: Always
+            volumes:
+                - name: database-claim0
+                  persistentVolumeClaim:
+                      claimName: database-claim0
 status: {}
