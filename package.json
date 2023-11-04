@@ -6,6 +6,17 @@
     },
     "scripts": {
         "prepare": "husky install",
-        "test": "return 0"
+        "test": "return 0",
+        "eslint": "eslint backend/*.js"
+    },
+    "devDependencies": {
+        "eslint": "^8.53.0",
+        "install": "^0.13.0",
+        "lint-staged": "^15.0.2"
+    },
+    "pre-commit": "eslint",
+    "lint-staged": {
+        "*.js": "eslint",
+        "*.css": "stylelint"
     }
 }
