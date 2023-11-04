@@ -1,0 +1,65 @@
+version: '3.8'
+services:
+    frontend:
+        image: app-frontend
+        build:
+            context: ./frontend/
+            dockerfile: ./Dockerfile
+        ports:
+            - '8080:80'
+        expose:
+            - '8080'
+        environment:
+            NODE_ENV: development
+            APP_BACKEND_HOST: backend
+            APP_BACKEND_PORT: 3000
+        networks:
+            intranet:
+                ipv4_address: '10.56.1.12'
+        depends_on:
+            - backend
+            - database
+
+    backend:
+        image: app-backend
+        build:
+            context: ./backend/
+            dockerfile: ./Dockerfile
+        networks:
+            intranet:
+                ipv4_address: '10.56.1.11'
+        ports:
+            - '3000:3000'
+        expose:
+            - 3000
+        volumes:
+            - ./backend:/usr/src/app
+        depends_on:
+            - database
+        environment:
+            APP_DB_HOST: database
+            APP_DB_USER: postgres
+            APP_DB_PASSWORD: 'ultrasecret'
+            APP_DB_NAME: app_db
+
+    database:
+        image: postgres:16.0-alpine3.18
+        restart: unless-stopped
+        environment:
+            POSTGRES_PASSWORD: 'ultrasecret'
+            POSTGRES_USER: postgres
+            POSTGRES_DB: app_db
+        expose: # this is only visible for vm's in the same network
+            - 5432
+        volumes:
+            - ./postgres-data:/var/lib/postgresql/data
+        networks:
+            intranet:
+                ipv4_address: '10.56.1.10'
+
+networks:
+    intranet:
+        ipam:
+            driver: default
+            config:
+                - subnet: '10.56.1.0/24'
