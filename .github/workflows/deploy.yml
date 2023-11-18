@@ -19,13 +19,13 @@ jobs:
       run: docker-compose -f docker-compose.yaml build
 
     - name: Authentication with GCR
-      run: echo ${{secrets.GCP_ENCRYPTED_KEY}} > key.json && gcloud auth activate-service-account --key-file=key.json
+      run: echo "${{secrets.GCP_ENCRYPTED_KEY}}" > key.json && gcloud auth activate-service-account --key-file=key.json
 
     - name: Build an push Docker Images
       run: |
-        echo ${{secrets.GCP_PROJECT_ID}} > .env
-        echo ${{secrets.GCP_REGION}} >> .env
-        echo ${{secrets.GCP_CLUSTER_NAME}} >> .env      
+        echo "${{secrets.GCP_PROJECT_ID}}" > .env
+        echo "${{secrets.GCP_REGION}}" >> .env
+        echo "${{secrets.GCP_CLUSTER_NAME}}" >> .env      
         docker-compose -f docker-compose.yml push
 
     - name: Configure Kubectl
