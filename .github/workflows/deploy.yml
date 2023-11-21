@@ -26,12 +26,6 @@ jobs:
       - name: Build Docker images
         run: docker-compose build
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials-json-file: ${{ secrets.GOOGLE_CREDENTIALS }}
-          project-id: ${{ secrets.GCP_PROJECT_ID }}
-
       - name: Push Docker images to Google Container Registry (GCR)
         run: |
           for image in $(docker-compose images -q); do
@@ -39,11 +33,11 @@ jobs:
             gcloud docker -- push gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
           done
 
-      - name: Deploy to Google Kubernetes Engine (GKE)
-        uses: GoogleCloudPlatform/k8s-deploy-action@v3
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
         with:
           credentials-json-file: ${{ secrets.GOOGLE_CREDENTIALS }}
-          cluster: ${{ secrets.GKE_CLUSTER_NAME }}
-          namespace: default
-          manifest-path: k8s/deployment.yaml
-      
+          project: ${{ secrets.GCP_PROJECT_ID }}
+          region: us-central1
+          name: adminsys2023-service
+          image: gcr.io/{{ secrets.GCP_PROJECT_ID }}/adminsys2023-service:latest
