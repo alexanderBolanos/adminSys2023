@@ -25,6 +25,17 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: 'actions/checkout@v3'
+
+      - name: Install Kubernetes Kompose
+        run: |
+          curl -L https://github.com/kubernetes/kompose/releases/download/v1.24.0/kompose-linux-amd64 -o kompose
+          chmod +x kompose
+          sudo mv kompose /usr/local/bin/
+
+      - name: Convert Docker Compose to Kubernetes
+        run: |
+          kompose convert -f docker-compose.yaml
+          ls  # Display the generated Kubernetes files
      
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
