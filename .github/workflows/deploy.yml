@@ -51,4 +51,15 @@ jobs:
       - id: 'get-pods'
         run: 'kubectl get pods'
 
+      - name: Build Docker images
+        run: docker-compose build
+
+      - name: Push Docker images to Google Container Registry (GCR)
+        run: |
+          for image in $(docker-compose images -q); do
+            docker tag $image gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
+            echo $image
+            gcloud docker -- push gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
+          done
+
       
