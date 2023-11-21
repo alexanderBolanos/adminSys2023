@@ -69,6 +69,7 @@ jobs:
         run: |
           docker compose build
           docker compose images
+          docker images
 
       - name: Push Docker images to Google Artifact Registry (GAR)
         id: push-images-GAR
