@@ -65,11 +65,13 @@ jobs:
         run: 'kubectl get pods'
 
       - name: Build Docker images
+        id: build-docker-images
         run: |
           docker compose build
           docker compose images
 
-      - name: Push Docker images to Google Container Registry (GCR)
+      - name: Push Docker images to Google Artifact Registry (GAR)
+        id: push-images-GAR
         run: |
           for image in $(docker compose images -q); do
             docker tag $image gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
