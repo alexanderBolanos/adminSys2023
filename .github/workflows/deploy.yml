@@ -7,32 +7,45 @@ on:
 
 name: Build and Deploy to Cloud Run
 
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Compose
-      run: docker-compose -f docker-compose.yaml build
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-    - name: Authentication with GCR
-      run: echo "${{secrets.GCP_ENCRYPTED_KEY}}" > key.json && gcloud auth activate-service-account --key-file=key.json
+      - name: Install dependencies
+        run: npm install
 
-    - name: Build an push Docker Images
-      run: |
-        echo "${{secrets.GCP_PROJECT_ID}}" > .env
-        echo "${{secrets.GCP_REGION}}" >> .env
-        echo "${{secrets.GCP_CLUSTER_NAME}}" >> .env      
-        docker-compose -f docker-compose.yml push
+      - name: Build Docker images
+        run: docker-compose build
 
-    - name: Configure Kubectl
-      run: |
-        gcloud container clusters get-credentials ${{ secrets.GCP_CLUSTER_NAME}} --region ${{ secrets.GCP_REGION}} --project ${{secrets.GCP_PROJECT_ID}}
+      - name: Authenticate to Google Cloud
+        uses: GoogleCloudPlatform/cloudbuild-action@master
+        with:
+          credentials-json-file: ${{ secrets.GCP_ENCRYPTED_KEY }}
+          project: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Apply Kubernetes configuration
-      run: kubectl apply -f backend-deployment.yaml
+      - name: Build and push Docker images
+        run: |
+          for image in $(docker-compose images -q); do
+            docker tag $image gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
+            gcloud docker -- push gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
+          done
+
+      - name: Deploy to Google Kubernetes Engine (GKE)
+        uses: GoogleCloudPlatform/k8s-deploy-action@v3
+        with:
+          credentials-json-file: ${{ secrets.GCP_ENCRYPTED_KEY }}
+          cluster: ${{ secrets.GCP_CLUSTER_NAME }}
+          namespace: default
+          manifest-path: k8s/deployment.yaml
 
       
