@@ -7,7 +7,6 @@ on:
 
 name: Build and Deploy to Cloud Run
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,12 +27,12 @@ jobs:
         run: docker-compose build
 
       - name: Authenticate to Google Cloud
-        uses: GoogleCloudPlatform/cloudbuild-action@master
+        uses: google-github-actions/auth@v1
         with:
-          credentials-json-file: ${{ secrets.GCP_ENCRYPTED_KEY }}
-          project: ${{ secrets.GCP_PROJECT_ID }}
+          credentials-json-file: ${{ secrets.GOOGLE_CREDENTIALS }}
+          project-id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Build and push Docker images
+      - name: Push Docker images to Google Container Registry (GCR)
         run: |
           for image in $(docker-compose images -q); do
             docker tag $image gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
@@ -43,9 +42,8 @@ jobs:
       - name: Deploy to Google Kubernetes Engine (GKE)
         uses: GoogleCloudPlatform/k8s-deploy-action@v3
         with:
-          credentials-json-file: ${{ secrets.GCP_ENCRYPTED_KEY }}
-          cluster: ${{ secrets.GCP_CLUSTER_NAME }}
+          credentials-json-file: ${{ secrets.GOOGLE_CREDENTIALS }}
+          cluster: ${{ secrets.GKE_CLUSTER_NAME }}
           namespace: default
           manifest-path: k8s/deployment.yaml
-
       
