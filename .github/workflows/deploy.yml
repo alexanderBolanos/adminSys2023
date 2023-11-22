@@ -79,7 +79,7 @@ jobs:
             gcloud docker -- push gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
           done
 
-      - name: Set backend and frontend variables:
+      - name: Set backend and frontend variables
         id: set-frontend-backend
         run: |
           frontend="$(docker images app-frontend -q)"
