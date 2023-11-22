@@ -98,7 +98,7 @@ jobs:
           project: ${{ secrets.GCP_PROJECT_ID }}
           region: ${{ secrets.GCP_REGION }}
           name: frontend
-          image: $GCR_FRONTEND
+          image: "$GCR_FRONTEND"
 
       - name: Deploy backend service
         uses: google-github-actions/deploy-cloudrun@v1
