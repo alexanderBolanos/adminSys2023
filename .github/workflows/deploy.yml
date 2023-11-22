@@ -12,6 +12,7 @@ env:
   PROJECT_ID: ${{secrets.GCP_PROJECT_ID}}
   GAR_LOCATION: ${{secrets.GCP_REGION}}
   REGION: ${{secrets.GCP_REGION}}
+  DOCKER_DEFAULT_PLATFORM: linux/amd64
   APP: adminsys2023-app
 
 jobs:
