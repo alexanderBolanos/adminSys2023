@@ -74,8 +74,9 @@ jobs:
         id: push-images-GAR
         run: |
           for image in $(docker images app* -q); do
-            docker tag $image gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
-            gcloud docker -- push gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
+            echo $image
+            docker tag $image gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
+            gcloud docker -- push gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
           done
 
       
