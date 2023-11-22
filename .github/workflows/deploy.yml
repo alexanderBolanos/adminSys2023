@@ -79,6 +79,14 @@ jobs:
             gcloud docker -- push gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
           done
 
+      - name: Set backend and frontend variables:
+        id: set-frontend-backend
+        run: |
+          frontend="$(docker images app-frontend -q)"
+          echo $frontend
+          backend="$(docker images app-backend -q)"
+          echo $backend
+
       - name: Deploy frontend service
         uses: google-github-actions/deploy-cloudrun@v1
         with:
@@ -86,7 +94,7 @@ jobs:
           project: ${{ secrets.GCP_PROJECT_ID }}
           region: ${{ secrets.GCP_REGION }}
           name: frontend
-          image: gcr.io/{{ secrets.GCP_PROJECT_ID }}/"$(docker images app-frontend -q)":latest
+          image: gcr.io/{{ secrets.GCP_PROJECT_ID }}/$frontend:latest
 
       - name: Deploy backend service
         uses: google-github-actions/deploy-cloudrun@v1
@@ -95,7 +103,7 @@ jobs:
           project: ${{ secrets.GCP_PROJECT_ID }}
           region: ${{secrets.GCP_REGION}}
           name: backend
-          image: gcr.io/{{ secrets.GCP_PROJECT_ID }}/"$(docker images app-backend -q)":latest
+          image: gcr.io/{{ secrets.GCP_PROJECT_ID }}/$backend:latest
 
      
       
