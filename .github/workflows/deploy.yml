@@ -81,10 +81,11 @@ jobs:
 
       - name: Set backend and frontend variables
         id: set-frontend-backend
+        env:
+          FRONTEND: $(docker images app-frontend -q)
+          BACKEND: $(docker images app-backend -q)
         run: |
-          echo "FRONTEND=$(docker images app-frontend -q)"
-          echo $FRONTEND
-          echo "BACKEND=$(docker images app-backend -q)"
+          echo $FRONTEND        
           echo $BACKEND
 
       - name: Deploy frontend service
@@ -94,7 +95,7 @@ jobs:
           project: ${{ secrets.GCP_PROJECT_ID }}
           region: ${{ secrets.GCP_REGION }}
           name: frontend
-          image: gcr.io/{{ secrets.GCP_PROJECT_ID }}/"$FRONTEND":latest
+          image: gcr.io/{{ secrets.GCP_PROJECT_ID }}/$FRONTEND:latest
 
       - name: Deploy backend service
         uses: google-github-actions/deploy-cloudrun@v1
