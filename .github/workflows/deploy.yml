@@ -85,7 +85,7 @@ jobs:
             echo $image
             docker tag $image gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
             gcloud docker -- push gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
-            gcloud run deploy adminsys2023-$image --image gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
+            gcloud run deploy adminsys2023-$image --image gcr.io/${{secrets.GCP_PROJECT_ID}}/$image --region ${{secrets.GCP_REGION}}
           done
 
 
