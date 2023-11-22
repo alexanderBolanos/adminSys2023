@@ -68,13 +68,12 @@ jobs:
         id: build-docker-images
         run: |
           docker compose build
-          docker compose images
-          docker images
+          docker images app*
 
       - name: Push Docker images to Google Artifact Registry (GAR)
         id: push-images-GAR
         run: |
-          for image in $(docker compose images -q); do
+          for image in $(docker images app* -q); do
             docker tag $image gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
             gcloud docker -- push gcr.io/{{ secrets.GCP_PROJECT_ID }}/$image
           done
