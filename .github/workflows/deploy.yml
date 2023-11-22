@@ -81,12 +81,11 @@ jobs:
 
       - name: Set backend and frontend variables
         id: set-frontend-backend
-        env:
-          FRONTEND: $(docker images app-frontend -q)
-          BACKEND: $(docker images app-backend -q)
         run: |
-          echo $FRONTEND        
-          echo $BACKEND
+          FRONTEND=$(docker images app-frontend -q)
+          echo "Frontend image: $FRONTEND"
+          BACKEND=$(docker images app-backend -q)
+          echo "BACKEND image: $FRONTEND"
 
       - name: Deploy frontend service
         uses: google-github-actions/deploy-cloudrun@v1
