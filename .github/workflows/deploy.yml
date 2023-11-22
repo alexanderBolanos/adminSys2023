@@ -74,22 +74,15 @@ jobs:
         id: set-frontend-backend
         run: |
           FRONTEND=$(docker images app-frontend -q)
-          echo "Frontend image: $FRONTEND"
-          GCR_FRONTEND="gcr.io/${{ secrets.GCP_PROJECT_ID }}/$FRONTEND:latest"
-          echo "GCR Frontend: $GCR_FRONTEND"
+          echo "Frontend image: $FRONTEND"        
           BACKEND=$(docker images app-backend -q)
           echo "BACKEND image: $BACKEND"
 
-      - name: Push Docker images to Google Artifact Registry (GAR)
-        id: push-images-GAR
+      - name: Push Frontend Docker Image to Google Container Registry
+        id: push-frontend
         run: |
-          for image in $(docker images app* -q); do
-            echo $image
-            docker tag $image gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
-            gcloud docker -- push gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
-          done
-
-      
+          docker tag $FRONTEND gcr.io/${{secrets.GCP_PROJECT_ID}}/app-frontend
+          gcloud docker -- push gcr.io/${{secrets.GCP_PROJECT_ID}}/app-frontend
 
       - name: Deploy frontend service
         uses: google-github-actions/deploy-cloudrun@v1
@@ -98,16 +91,31 @@ jobs:
           project: ${{ secrets.GCP_PROJECT_ID }}
           region: ${{ secrets.GCP_REGION }}
           name: frontend
-          image: "$GCR_FRONTEND"
+          image: gcr.io/${{secrets.GCP_PROJECT_ID}}/app-frontend:latest
 
-      - name: Deploy backend service
-        uses: google-github-actions/deploy-cloudrun@v1
-        with:
-          credentials-json-file: ${{ secrets.GCP_CREDENTIALS }}
-          project: ${{ secrets.GCP_PROJECT_ID }}
-          region: ${{secrets.GCP_REGION}}
-          name: backend
-          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/$BACKEND:latest
+
+
+      #- name: Push Docker images to Google Artifact Registry (GAR)
+      #  id: push-images-GAR
+      #  run: |
+      #    for image in $(docker images app* -q); do
+      #      echo $image
+      #      docker tag $image gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
+      #      gcloud docker -- push gcr.io/${{secrets.GCP_PROJECT_ID}}/$image
+      #    done
+
+      
+
+  
+
+      #- name: Deploy backend service
+      #  uses: google-github-actions/deploy-cloudrun@v1
+      #  with:
+      #    credentials-json-file: ${{ secrets.GCP_CREDENTIALS }}
+      #    project: ${{ secrets.GCP_PROJECT_ID }}
+      #    region: ${{secrets.GCP_REGION}}
+      #    name: backend
+      #    image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/$BACKEND:latest
 
      
       
