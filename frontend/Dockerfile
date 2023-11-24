@@ -1,5 +1,6 @@
 FROM node:20-alpine3.17 AS builder
 ENV NODE_ENV production
+ENV PORT 3000
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
@@ -17,4 +18,5 @@ RUN rm -rf ./*
 
 COPY --from=builder /app/build .
 COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 3000
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
