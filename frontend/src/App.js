@@ -1,8 +1,9 @@
 // App.js
 import React, { useState, useEffect } from 'react';
 import UserCard from './Components/UserCard';
+import 'dotenv/config';
 
-const App = ({ backendUri = 'http://localhost:3000/api/personas/10' }) => {
+const App = ({ backendUri = process.env.BACKEND_URL }) => {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
