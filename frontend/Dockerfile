@@ -12,7 +12,7 @@ RUN ls
 
 # stage 2
 # from the last version of nginx
-FROM nginx:1.19.0
+FROM nginx:1.25.3
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
